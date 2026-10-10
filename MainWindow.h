@@ -39,7 +39,7 @@ private:
     // Right Panel Win32 Property Controls
     HWND          m_hGrpShapeProperties;
     HWND          m_hLblLineWidth;
-    HWND          m_hComboStrokeWidth;
+    HWND          m_hTrackStrokeWidth;
     HWND          m_hBtnStrokeColor;
     HWND          m_hBtnFillColor;
     HWND          m_hChkFilled;
@@ -87,6 +87,7 @@ public:
 
     void UpdateTitleBar();
     void UpdateStatusBar(float x, float y, const wchar_t* statusText = nullptr);
+    void UpdateSelectionPropertiesUI();
 
 protected:
     virtual PCWSTR GetClassName() const override { return L"D2DMainWindow"; }

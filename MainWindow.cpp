@@ -99,7 +99,7 @@ void MainWindow::CreateAppStatusBar()
 
 #define IDC_STROKE_COLOR_BTN       1050
 #define IDC_FILL_COLOR_BTN         1051
-#define IDC_STROKE_WIDTH_COMBO     1052
+#define IDC_STROKE_WIDTH_TRACK     1052
 #define IDC_FILLED_CHECK           1053
 
 #define IDC_GRID_UNIT_COMBO        1060
@@ -165,29 +165,27 @@ void MainWindow::CreateSoftimagePanels()
         10, 320, 120, 26, m_hLeftPanel, (HMENU)(UINT_PTR)IDM_EDIT_DELETE, hInst, NULL);
 
     // Right Panel Children Controls - Style & Grid Settings (Grouped with GroupBoxes)
-    m_hGrpShapeProperties = CreateWindowEx(0, L"BUTTON", L" MCP Properties ",
+    m_hGrpShapeProperties = CreateWindowEx(0, L"BUTTON", L" Selection Properties ",
         WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
         5, 28, 170, 180, m_hRightMCP, NULL, hInst, NULL);
 
-    m_hLblLineWidth = CreateWindowEx(0, L"STATIC", L"Line Width:", WS_CHILD | WS_VISIBLE,
-        15, 48, 150, 18, m_hRightMCP, NULL, hInst, NULL);
+    m_hLblLineWidth = CreateWindowEx(0, L"STATIC", L"Line Width: 2.0 px", WS_CHILD | WS_VISIBLE,
+        15, 48, 150, 16, m_hRightMCP, NULL, hInst, NULL);
 
-    m_hComboStrokeWidth = CreateWindowEx(0, L"COMBOBOX", L"",
-        WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL,
-        15, 68, 150, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_STROKE_WIDTH_COMBO, hInst, NULL);
-
-    const wchar_t* widths[] = { L"1.0 px", L"2.0 px", L"3.0 px", L"5.0 px", L"8.0 px", L"12.0 px" };
-    for (int i = 0; i < 6; ++i) SendMessage(m_hComboStrokeWidth, CB_ADDSTRING, 0, (LPARAM)widths[i]);
-    SendMessage(m_hComboStrokeWidth, CB_SETCURSEL, 1, 0);
+    m_hTrackStrokeWidth = CreateWindowEx(0, TRACKBAR_CLASS, L"",
+        WS_CHILD | WS_VISIBLE | TBS_HORZ | TBS_AUTOTICKS,
+        15, 64, 150, 26, m_hRightMCP, (HMENU)(UINT_PTR)IDC_STROKE_WIDTH_TRACK, hInst, NULL);
+    SendMessage(m_hTrackStrokeWidth, TBM_SETRANGE, TRUE, MAKELPARAM(1, 100)); // 0.1px ~ 10.0px (1~100)
+    SendMessage(m_hTrackStrokeWidth, TBM_SETPOS, TRUE, 20); // 2.0 px default
 
     m_hBtnStrokeColor = CreateWindowEx(0, L"BUTTON", L"Stroke Color...", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-        15, 100, 150, 26, m_hRightMCP, (HMENU)(UINT_PTR)IDC_STROKE_COLOR_BTN, hInst, NULL);
+        15, 96, 150, 26, m_hRightMCP, (HMENU)(UINT_PTR)IDC_STROKE_COLOR_BTN, hInst, NULL);
 
     m_hBtnFillColor = CreateWindowEx(0, L"BUTTON", L"Fill Color...", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-        15, 132, 150, 26, m_hRightMCP, (HMENU)(UINT_PTR)IDC_FILL_COLOR_BTN, hInst, NULL);
+        15, 128, 150, 26, m_hRightMCP, (HMENU)(UINT_PTR)IDC_FILL_COLOR_BTN, hInst, NULL);
 
     m_hChkFilled = CreateWindowEx(0, L"BUTTON", L"Filled Shape", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
-        15, 164, 150, 22, m_hRightMCP, (HMENU)(UINT_PTR)IDC_FILLED_CHECK, hInst, NULL);
+        15, 158, 150, 22, m_hRightMCP, (HMENU)(UINT_PTR)IDC_FILLED_CHECK, hInst, NULL);
 
     // --- Grid Settings Outer GroupBox ---
     m_hGrpGridSettings = CreateWindowEx(0, L"BUTTON", L" Grid Settings ",
@@ -370,8 +368,8 @@ void MainWindow::LayoutPanelControls()
             if (m_hGrpSubGrid) MoveWindow(m_hGrpSubGrid, 0, 0, 0, 0, TRUE);
 
             // Style controls
-            if (m_hLblLineWidth) { MoveWindow(m_hLblLineWidth, x, marginY + 4, 60, 20, TRUE); x += 62; }
-            if (m_hComboStrokeWidth) { MoveWindow(m_hComboStrokeWidth, x, marginY, 70, 150, TRUE); x += 70 + gap; }
+            if (m_hLblLineWidth) { MoveWindow(m_hLblLineWidth, x, marginY + 4, 80, 20, TRUE); x += 82; }
+            if (m_hTrackStrokeWidth) { MoveWindow(m_hTrackStrokeWidth, x, marginY, 100, 26, TRUE); x += 100 + gap; }
             if (m_hBtnStrokeColor) { MoveWindow(m_hBtnStrokeColor, x, marginY, 85, 26, TRUE); x += 85 + gap; }
             if (m_hBtnFillColor) { MoveWindow(m_hBtnFillColor, x, marginY, 80, 26, TRUE); x += 80 + gap; }
             if (m_hChkFilled) { MoveWindow(m_hChkFilled, x, marginY + 2, 75, 24, TRUE); x += 75 + gap; }
@@ -416,13 +414,13 @@ void MainWindow::LayoutPanelControls()
             int grpMainInnerW = itemW - 28;
             if (grpMainInnerW < 80) grpMainInnerW = 80;
 
-            // 1. [ MCP Properties ] GroupBox
+            // 1. [ Selection Properties ] GroupBox
             MoveWindow(m_hGrpShapeProperties, x, headerH + 4, itemW, 172, TRUE);
             MoveWindow(m_hLblLineWidth,       innerX, headerH + 24, innerW, 16, TRUE);
-            MoveWindow(m_hComboStrokeWidth,   innerX, headerH + 42, innerW, 150, TRUE);
-            MoveWindow(m_hBtnStrokeColor,     innerX, headerH + 72, innerW, 24, TRUE);
-            MoveWindow(m_hBtnFillColor,       innerX, headerH + 100, innerW, 24, TRUE);
-            MoveWindow(m_hChkFilled,          innerX, headerH + 128, innerW, 22, TRUE);
+            MoveWindow(m_hTrackStrokeWidth,   innerX, headerH + 40, innerW, 26, TRUE);
+            MoveWindow(m_hBtnStrokeColor,     innerX, headerH + 70, innerW, 24, TRUE);
+            MoveWindow(m_hBtnFillColor,       innerX, headerH + 98, innerW, 24, TRUE);
+            MoveWindow(m_hChkFilled,          innerX, headerH + 126, innerW, 22, TRUE);
 
             // 2. [ Grid Settings ] GroupBox
             MoveWindow(m_hGrpGridSettings,    x, headerH + 184, itemW, 560, TRUE);
@@ -663,6 +661,8 @@ void MainWindow::UpdateToolUIState(ToolType tool)
     if (m_hBtnLine)    SendMessage(m_hBtnLine, BM_SETCHECK, (activeId == IDM_SHAPE_LINE) ? BST_CHECKED : BST_UNCHECKED, 0);
     if (m_hBtnText)    SendMessage(m_hBtnText, BM_SETCHECK, (activeId == IDM_SHAPE_TEXT) ? BST_CHECKED : BST_UNCHECKED, 0);
     if (m_hBtnPolygon) SendMessage(m_hBtnPolygon, BM_SETCHECK, (activeId == IDM_SHAPE_POLYGON) ? BST_CHECKED : BST_UNCHECKED, 0);
+
+    UpdateSelectionPropertiesUI();
 }
 
 void MainWindow::ApplyPropertyChanges()
@@ -681,6 +681,74 @@ void MainWindow::ApplyPropertyChanges()
         );
         InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
         UpdateTitleBar();
+    }
+}
+
+void MainWindow::UpdateSelectionPropertiesUI()
+{
+    IShape* pSelected = m_canvasWindow.GetEditorController().GetSelectionManager().GetSelectedShape();
+    std::wstring groupTitle;
+    float strokeW = 2.0f;
+    bool filled = false;
+
+    if (pSelected)
+    {
+        strokeW = pSelected->GetStrokeWidth();
+        filled = pSelected->IsFilled();
+        m_toolManager.SetStrokeWidth(strokeW);
+        m_toolManager.SetStrokeColor(pSelected->GetStrokeColor());
+        m_toolManager.SetFillColor(pSelected->GetFillColor());
+        m_toolManager.SetFilled(filled);
+
+        switch (pSelected->GetType())
+        {
+        case ShapeType::Rectangle: groupTitle = L" Rectangle Properties "; break;
+        case ShapeType::Ellipse:   groupTitle = L" Ellipse Properties "; break;
+        case ShapeType::Line:      groupTitle = L" Line Properties "; break;
+        case ShapeType::Text:      groupTitle = L" Text Properties "; break;
+        default:                   groupTitle = L" Shape Properties "; break;
+        }
+    }
+    else
+    {
+        strokeW = m_toolManager.GetStrokeWidth();
+        filled = m_toolManager.IsFilled();
+
+        ToolType tool = m_toolManager.GetCurrentTool();
+        switch (tool)
+        {
+        case ToolType::Rectangle: groupTitle = L" Rectangle Settings "; break;
+        case ToolType::Ellipse:   groupTitle = L" Ellipse Settings "; break;
+        case ToolType::Line:      groupTitle = L" Line Settings "; break;
+        case ToolType::Text:      groupTitle = L" Text Settings "; break;
+        case ToolType::Polygon:   groupTitle = L" Polygon Settings "; break;
+        default:                   groupTitle = L" Selection Properties "; break;
+        }
+    }
+
+    if (m_hGrpShapeProperties)
+    {
+        SetWindowText(m_hGrpShapeProperties, groupTitle.c_str());
+    }
+
+    if (m_hTrackStrokeWidth)
+    {
+        int pos = static_cast<int>(roundf(strokeW * 10.0f));
+        if (pos < 1) pos = 1;
+        if (pos > 100) pos = 100;
+        SendMessage(m_hTrackStrokeWidth, TBM_SETPOS, TRUE, pos);
+    }
+
+    if (m_hLblLineWidth)
+    {
+        wchar_t buf[64];
+        swprintf_s(buf, L"Line Width: %.1f px", strokeW);
+        SetWindowText(m_hLblLineWidth, buf);
+    }
+
+    if (m_hChkFilled)
+    {
+        SendMessage(m_hChkFilled, BM_SETCHECK, filled ? BST_CHECKED : BST_UNCHECKED, 0);
     }
 }
 
@@ -794,17 +862,6 @@ void MainWindow::OnCommand(WPARAM wParam, LPARAM lParam)
         }
         break;
     }
-    case IDC_STROKE_WIDTH_COMBO:
-        if (HIWORD(wParam) == CBN_SELCHANGE)
-        {
-            int sel = (int)SendMessage(m_hComboStrokeWidth, CB_GETCURSEL, 0, 0);
-            float widths[] = { 1.0f, 2.0f, 3.0f, 5.0f, 8.0f, 12.0f };
-            if (sel >= 0 && sel < 6)
-            {
-                m_toolManager.SetStrokeWidth(widths[sel]);
-                ApplyPropertyChanges();
-            }
-        }
         break;
     case IDC_FILLED_CHECK:
         if (HIWORD(wParam) == BN_CLICKED)
@@ -927,7 +984,19 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_HSCROLL:
     {
         HWND hTrack = (HWND)lParam;
-        if (hTrack == m_hTrackMainLineWidth)
+        if (hTrack == m_hTrackStrokeWidth)
+        {
+            int pos = (int)SendMessage(m_hTrackStrokeWidth, TBM_GETPOS, 0, 0);
+            float width = static_cast<float>(pos) / 10.0f; // 1~100 -> 0.1px ~ 10.0px
+            m_toolManager.SetStrokeWidth(width);
+
+            wchar_t buf[64];
+            swprintf_s(buf, L"Line Width: %.1f px", width);
+            SetWindowText(m_hLblLineWidth, buf);
+
+            ApplyPropertyChanges();
+        }
+        else if (hTrack == m_hTrackMainLineWidth)
         {
             int pos = (int)SendMessage(m_hTrackMainLineWidth, TBM_GETPOS, 0, 0);
             float width = static_cast<float>(pos) / 10.0f; // 1~30 -> 0.1px ~ 3.0px
@@ -989,6 +1058,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         float y = static_cast<float>((int)lParam);
         const std::wstring& msg = m_canvasWindow.GetEditorController().GetLastStatusMessage();
         UpdateStatusBar(x, y, msg.c_str());
+        UpdateSelectionPropertiesUI();
         return 0;
     }
 
@@ -996,6 +1066,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         ToolType currentTool = m_toolManager.GetCurrentTool();
         UpdateToolUIState(currentTool);
+        UpdateSelectionPropertiesUI();
         return 0;
     }
 

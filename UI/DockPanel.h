@@ -97,6 +97,12 @@ protected:
             SelectObject(hdc, hOldPen);
             DeleteObject(hPen);
 
+            // Content area background (Light slate tint matching modern panel controls)
+            RECT bodyRect = { crt.left, crt.top + 26, crt.right, crt.bottom };
+            HBRUSH hBodyBrush = CreateSolidBrush(RGB(240, 243, 248));
+            FillRect(hdc, &bodyRect, hBodyBrush);
+            DeleteObject(hBodyBrush);
+
             // Outer frame
             HPEN hFramePen = CreatePen(PS_SOLID, 1, RGB(200, 205, 215));
             HPEN hOldFramePen = (HPEN)SelectObject(hdc, hFramePen);
