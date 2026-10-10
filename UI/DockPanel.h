@@ -245,7 +245,24 @@ protected:
         }
 
         case WM_ERASEBKGND:
+        {
+            HDC hdc = (HDC)wParam;
+            RECT crt;
+            GetClientRect(m_hWnd, &crt);
+
+            // Fill header area
+            RECT hdrRect = { crt.left, crt.top, crt.right, crt.top + 26 };
+            HBRUSH hHdrBrush = CreateSolidBrush(RGB(45, 55, 72));
+            FillRect(hdc, &hdrRect, hHdrBrush);
+            DeleteObject(hHdrBrush);
+
+            // Fill body area with panel background color
+            RECT bodyRect = { crt.left, crt.top + 26, crt.right, crt.bottom };
+            HBRUSH hBodyBrush = CreateSolidBrush(RGB(240, 243, 248));
+            FillRect(hdc, &bodyRect, hBodyBrush);
+            DeleteObject(hBodyBrush);
             return 1;
+        }
         }
         return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
     }

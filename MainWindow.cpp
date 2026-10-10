@@ -423,7 +423,7 @@ void MainWindow::LayoutPanelControls()
             MoveWindow(m_hChkFilled,          innerX, headerH + 126, innerW, 22, TRUE);
 
             // 2. [ Grid Settings ] GroupBox
-            MoveWindow(m_hGrpGridSettings,    x, headerH + 184, itemW, 560, TRUE);
+            MoveWindow(m_hGrpGridSettings,    x, headerH + 184, itemW, 565, TRUE);
             MoveWindow(m_hLblGridUnit,        innerX, headerH + 204, innerW, 16, TRUE);
             MoveWindow(m_hComboGridUnit,      innerX, headerH + 222, innerW, 150, TRUE);
             MoveWindow(m_hChkShowGrid,        innerX, headerH + 252, innerW, 22, TRUE);
@@ -449,8 +449,8 @@ void MainWindow::LayoutPanelControls()
             MoveWindow(m_hTrackSubOpacity,    grpMainInnerX, headerH + 650, grpMainInnerW, 26, TRUE);
 
             // Snap and status
-            MoveWindow(m_hChkSnapToGrid,      innerX, headerH + 710, innerW, 22, TRUE);
-            MoveWindow(m_hLblSelectionInfo,   x, headerH + 750, itemW, 40, TRUE);
+            MoveWindow(m_hChkSnapToGrid,      innerX, headerH + 714, innerW, 22, TRUE);
+            MoveWindow(m_hLblSelectionInfo,   x, headerH + 755, itemW, 40, TRUE);
         }
     }
 }
