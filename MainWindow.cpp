@@ -985,6 +985,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_CTLCOLORBTN:
     {
         HDC hdcStatic = (HDC)wParam;
+        SetBkMode(hdcStatic, TRANSPARENT);
         SetBkColor(hdcStatic, RGB(240, 243, 248));
         SetTextColor(hdcStatic, RGB(30, 40, 55));
         static HBRUSH hBackBrush = CreateSolidBrush(RGB(240, 243, 248));
