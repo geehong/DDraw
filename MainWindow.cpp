@@ -104,10 +104,17 @@ void MainWindow::CreateAppStatusBar()
 
 #define IDC_GRID_UNIT_COMBO        1060
 #define IDC_SHOW_GRID_CHECK        1061
+
 #define IDC_MAIN_GRID_STEP_COMBO   1062
-#define IDC_SUB_DIVISIONS_COMBO    1063
 #define IDC_MAIN_LINE_WIDTH_COMBO  1064
+#define IDC_MAIN_GRID_COLOR_BTN    1067
+#define IDC_MAIN_OPACITY_COMBO     1068
+
+#define IDC_SUB_DIVISIONS_COMBO    1063
 #define IDC_SUB_LINE_WIDTH_COMBO   1065
+#define IDC_SUB_GRID_COLOR_BTN     1069
+#define IDC_SUB_OPACITY_COMBO      1070
+
 #define IDC_SNAP_TO_GRID_CHECK     1066
 
 void MainWindow::CreateSoftimagePanels()
@@ -206,73 +213,85 @@ void MainWindow::CreateSoftimagePanels()
         10, 290, 160, 24, m_hRightMCP, (HMENU)(UINT_PTR)IDC_SHOW_GRID_CHECK, hInst, NULL);
     SendMessage(m_hChkShowGrid, BM_SETCHECK, BST_CHECKED, 0);
 
-    // 1. Main Grid Step (e.g., 50 P)
-    m_hLblMainGridStep = CreateWindowEx(0, L"STATIC", L"Main Grid Step:", WS_CHILD | WS_VISIBLE,
+    // =========================================================
+    // [ Main Grid Group ] (Header, Step, Width, Color, Opacity)
+    // =========================================================
+    m_hLblMainGroupHeader = CreateWindowEx(0, L"STATIC", L" [ Main Grid ]", WS_CHILD | WS_VISIBLE | SS_LEFT,
         10, 320, 160, 18, m_hRightMCP, NULL, hInst, NULL);
 
+    m_hLblMainGridStep = CreateWindowEx(0, L"STATIC", L"Step:", WS_CHILD | WS_VISIBLE,
+        10, 340, 160, 18, m_hRightMCP, NULL, hInst, NULL);
     m_hComboMainGridStep = CreateWindowEx(0, L"COMBOBOX", L"",
         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL,
-        10, 340, 160, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_MAIN_GRID_STEP_COMBO, hInst, NULL);
-
+        10, 360, 160, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_MAIN_GRID_STEP_COMBO, hInst, NULL);
     const wchar_t* mainSteps[] = { L"20 unit", L"50 unit (50P)", L"100 unit", L"200 unit" };
-    for (int i = 0; i < 4; ++i)
-    {
-        SendMessage(m_hComboMainGridStep, CB_ADDSTRING, 0, (LPARAM)mainSteps[i]);
-    }
+    for (int i = 0; i < 4; ++i) SendMessage(m_hComboMainGridStep, CB_ADDSTRING, 0, (LPARAM)mainSteps[i]);
     SendMessage(m_hComboMainGridStep, CB_SETCURSEL, 1, 0); // 50 unit default
 
-    // 2. Sub Grid Divisions (Split Count)
-    m_hLblSubDivisions = CreateWindowEx(0, L"STATIC", L"Sub Divisions (Split):", WS_CHILD | WS_VISIBLE,
-        10, 372, 160, 18, m_hRightMCP, NULL, hInst, NULL);
-
-    m_hComboSubDivisions = CreateWindowEx(0, L"COMBOBOX", L"",
-        WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL,
-        10, 392, 160, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_SUB_DIVISIONS_COMBO, hInst, NULL);
-
-    const wchar_t* subSplits[] = { L"2 splits", L"5 splits (10P sub)", L"10 splits (5P sub)", L"20 splits" };
-    for (int i = 0; i < 4; ++i)
-    {
-        SendMessage(m_hComboSubDivisions, CB_ADDSTRING, 0, (LPARAM)subSplits[i]);
-    }
-    SendMessage(m_hComboSubDivisions, CB_SETCURSEL, 1, 0); // 5 splits default
-
-    // 3. Line Widths
-    m_hLblMainLineWidth = CreateWindowEx(0, L"STATIC", L"Main Line Width:", WS_CHILD | WS_VISIBLE,
-        10, 424, 160, 18, m_hRightMCP, NULL, hInst, NULL);
-
+    m_hLblMainLineWidth = CreateWindowEx(0, L"STATIC", L"Width:", WS_CHILD | WS_VISIBLE,
+        10, 392, 160, 18, m_hRightMCP, NULL, hInst, NULL);
     m_hComboMainLineWidth = CreateWindowEx(0, L"COMBOBOX", L"",
         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL,
-        10, 444, 160, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_MAIN_LINE_WIDTH_COMBO, hInst, NULL);
-
-    const wchar_t* mainLineW[] = { L"0.5 px", L"1.0 px (Bold)", L"1.5 px", L"2.0 px" };
-    for (int i = 0; i < 4; ++i)
-    {
-        SendMessage(m_hComboMainLineWidth, CB_ADDSTRING, 0, (LPARAM)mainLineW[i]);
-    }
+        10, 412, 160, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_MAIN_LINE_WIDTH_COMBO, hInst, NULL);
+    const wchar_t* mainLineW[] = { L"0.5 px", L"1.0 px (Bold)", L"1.5 px", L"2.0 px", L"3.0 px" };
+    for (int i = 0; i < 5; ++i) SendMessage(m_hComboMainLineWidth, CB_ADDSTRING, 0, (LPARAM)mainLineW[i]);
     SendMessage(m_hComboMainLineWidth, CB_SETCURSEL, 1, 0); // 1.0 px default
 
-    m_hLblSubLineWidth = CreateWindowEx(0, L"STATIC", L"Sub Line Width:", WS_CHILD | WS_VISIBLE,
-        10, 476, 160, 18, m_hRightMCP, NULL, hInst, NULL);
+    m_hBtnMainGridColor = CreateWindowEx(0, L"BUTTON", L"Main Grid Color...", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+        10, 444, 160, 26, m_hRightMCP, (HMENU)(UINT_PTR)IDC_MAIN_GRID_COLOR_BTN, hInst, NULL);
 
+    m_hLblMainOpacity = CreateWindowEx(0, L"STATIC", L"Opacity:", WS_CHILD | WS_VISIBLE,
+        10, 476, 160, 18, m_hRightMCP, NULL, hInst, NULL);
+    m_hComboMainOpacity = CreateWindowEx(0, L"COMBOBOX", L"",
+        WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL,
+        10, 496, 160, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_MAIN_OPACITY_COMBO, hInst, NULL);
+    const wchar_t* opacities[] = { L"100%", L"95%", L"80%", L"60%", L"40%", L"20%" };
+    for (int i = 0; i < 6; ++i) SendMessage(m_hComboMainOpacity, CB_ADDSTRING, 0, (LPARAM)opacities[i]);
+    SendMessage(m_hComboMainOpacity, CB_SETCURSEL, 1, 0); // 95% default
+
+    // =========================================================
+    // [ Sub Grid Group ] (Header, Split, Width, Color, Opacity)
+    // =========================================================
+    m_hLblSubGroupHeader = CreateWindowEx(0, L"STATIC", L" [ Sub Grid ]", WS_CHILD | WS_VISIBLE | SS_LEFT,
+        10, 528, 160, 18, m_hRightMCP, NULL, hInst, NULL);
+
+    m_hLblSubDivisions = CreateWindowEx(0, L"STATIC", L"Split Count:", WS_CHILD | WS_VISIBLE,
+        10, 548, 160, 18, m_hRightMCP, NULL, hInst, NULL);
+    m_hComboSubDivisions = CreateWindowEx(0, L"COMBOBOX", L"",
+        WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL,
+        10, 568, 160, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_SUB_DIVISIONS_COMBO, hInst, NULL);
+    const wchar_t* subSplits[] = { L"2 splits", L"5 splits (10P sub)", L"10 splits (5P sub)", L"20 splits" };
+    for (int i = 0; i < 4; ++i) SendMessage(m_hComboSubDivisions, CB_ADDSTRING, 0, (LPARAM)subSplits[i]);
+    SendMessage(m_hComboSubDivisions, CB_SETCURSEL, 1, 0); // 5 splits default
+
+    m_hLblSubLineWidth = CreateWindowEx(0, L"STATIC", L"Width:", WS_CHILD | WS_VISIBLE,
+        10, 600, 160, 18, m_hRightMCP, NULL, hInst, NULL);
     m_hComboSubLineWidth = CreateWindowEx(0, L"COMBOBOX", L"",
         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL,
-        10, 496, 160, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_SUB_LINE_WIDTH_COMBO, hInst, NULL);
+        10, 620, 160, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_SUB_LINE_WIDTH_COMBO, hInst, NULL);
+    const wchar_t* subLineW[] = { L"0.2 px", L"0.5 px (Solid)", L"0.8 px", L"1.0 px" };
+    for (int i = 0; i < 4; ++i) SendMessage(m_hComboSubLineWidth, CB_ADDSTRING, 0, (LPARAM)subLineW[i]);
+    SendMessage(m_hComboSubLineWidth, CB_SETCURSEL, 1, 0); // 0.5 px default
 
-    const wchar_t* subLineW[] = { L"0.1 px (Fine)", L"0.2 px", L"0.3 px", L"0.5 px" };
-    for (int i = 0; i < 4; ++i)
-    {
-        SendMessage(m_hComboSubLineWidth, CB_ADDSTRING, 0, (LPARAM)subLineW[i]);
-    }
-    SendMessage(m_hComboSubLineWidth, CB_SETCURSEL, 1, 0); // 0.2 px default
+    m_hBtnSubGridColor = CreateWindowEx(0, L"BUTTON", L"Sub Grid Color...", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+        10, 652, 160, 26, m_hRightMCP, (HMENU)(UINT_PTR)IDC_SUB_GRID_COLOR_BTN, hInst, NULL);
 
-    // 4. Snap to Sub-Grid
+    m_hLblSubOpacity = CreateWindowEx(0, L"STATIC", L"Opacity:", WS_CHILD | WS_VISIBLE,
+        10, 684, 160, 18, m_hRightMCP, NULL, hInst, NULL);
+    m_hComboSubOpacity = CreateWindowEx(0, L"COMBOBOX", L"",
+        WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL,
+        10, 704, 160, 150, m_hRightMCP, (HMENU)(UINT_PTR)IDC_SUB_OPACITY_COMBO, hInst, NULL);
+    for (int i = 0; i < 6; ++i) SendMessage(m_hComboSubOpacity, CB_ADDSTRING, 0, (LPARAM)opacities[i]);
+    SendMessage(m_hComboSubOpacity, CB_SETCURSEL, 4, 0); // 40% default
+
+    // Snap to Sub Grid
     m_hChkSnapToGrid = CreateWindowEx(0, L"BUTTON", L"Snap to Sub Grid", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
-        10, 528, 160, 24, m_hRightMCP, (HMENU)(UINT_PTR)IDC_SNAP_TO_GRID_CHECK, hInst, NULL);
+        10, 736, 160, 24, m_hRightMCP, (HMENU)(UINT_PTR)IDC_SNAP_TO_GRID_CHECK, hInst, NULL);
     SendMessage(m_hChkSnapToGrid, BM_SETCHECK, BST_CHECKED, 0);
 
     m_hLblSelectionInfo = CreateWindowEx(0, L"STATIC", L"Status: Ready",
         WS_CHILD | WS_VISIBLE | SS_LEFT,
-        10, 560, 160, 50, m_hRightMCP, NULL, hInst, NULL);
+        10, 768, 160, 40, m_hRightMCP, NULL, hInst, NULL);
 
     LayoutPanelControls();
 }
@@ -352,6 +371,8 @@ void MainWindow::LayoutPanelControls()
 
             if (m_hLblPropertiesHeader) MoveWindow(m_hLblPropertiesHeader, 0, 0, 0, 0, TRUE);
             if (m_hLblGridHeader) MoveWindow(m_hLblGridHeader, 0, 0, 0, 0, TRUE);
+            if (m_hLblMainGroupHeader) MoveWindow(m_hLblMainGroupHeader, 0, 0, 0, 0, TRUE);
+            if (m_hLblSubGroupHeader) MoveWindow(m_hLblSubGroupHeader, 0, 0, 0, 0, TRUE);
 
             // Style controls
             if (m_hLblLineWidth) { MoveWindow(m_hLblLineWidth, x, marginY + 4, 60, 20, TRUE); x += 62; }
@@ -369,11 +390,16 @@ void MainWindow::LayoutPanelControls()
             if (m_hChkSnapToGrid) { MoveWindow(m_hChkSnapToGrid, x, marginY + 2, 95, 24, TRUE); x += 95 + gap; }
 
             if (m_hLblMainGridStep) MoveWindow(m_hLblMainGridStep, 0, 0, 0, 0, TRUE);
-            if (m_hLblSubDivisions) MoveWindow(m_hLblSubDivisions, 0, 0, 0, 0, TRUE);
-            if (m_hLblMainLineWidth) MoveWindow(m_hLblMainLineWidth, 0, 0, 0, 0, TRUE);
             if (m_hComboMainLineWidth) MoveWindow(m_hComboMainLineWidth, 0, 0, 0, 0, TRUE);
-            if (m_hLblSubLineWidth) MoveWindow(m_hLblSubLineWidth, 0, 0, 0, 0, TRUE);
+            if (m_hBtnMainGridColor) MoveWindow(m_hBtnMainGridColor, 0, 0, 0, 0, TRUE);
+            if (m_hLblMainOpacity) MoveWindow(m_hLblMainOpacity, 0, 0, 0, 0, TRUE);
+            if (m_hComboMainOpacity) MoveWindow(m_hComboMainOpacity, 0, 0, 0, 0, TRUE);
+
+            if (m_hLblSubDivisions) MoveWindow(m_hLblSubDivisions, 0, 0, 0, 0, TRUE);
             if (m_hComboSubLineWidth) MoveWindow(m_hComboSubLineWidth, 0, 0, 0, 0, TRUE);
+            if (m_hBtnSubGridColor) MoveWindow(m_hBtnSubGridColor, 0, 0, 0, 0, TRUE);
+            if (m_hLblSubOpacity) MoveWindow(m_hLblSubOpacity, 0, 0, 0, 0, TRUE);
+            if (m_hComboSubOpacity) MoveWindow(m_hComboSubOpacity, 0, 0, 0, 0, TRUE);
 
             if (m_hLblSelectionInfo) MoveWindow(m_hLblSelectionInfo, x, marginY + 4, 100, 20, TRUE);
         }
@@ -399,22 +425,29 @@ void MainWindow::LayoutPanelControls()
             MoveWindow(m_hComboGridUnit,      x, headerH + 182, itemW, 150, TRUE);
             MoveWindow(m_hChkShowGrid,        x, headerH + 210, itemW, 22, TRUE);
 
-            MoveWindow(m_hLblMainGridStep,    x, headerH + 234, itemW, 16, TRUE);
-            MoveWindow(m_hComboMainGridStep,  x, headerH + 250, itemW, 150, TRUE);
+            // [ Main Grid Group ]
+            MoveWindow(m_hLblMainGroupHeader, x, headerH + 234, itemW, 16, TRUE);
+            MoveWindow(m_hLblMainGridStep,    x, headerH + 252, itemW, 16, TRUE);
+            MoveWindow(m_hComboMainGridStep,  x, headerH + 268, itemW, 150, TRUE);
+            MoveWindow(m_hLblMainLineWidth,   x, headerH + 296, itemW, 16, TRUE);
+            MoveWindow(m_hComboMainLineWidth, x, headerH + 312, itemW, 150, TRUE);
+            MoveWindow(m_hBtnMainGridColor,   x, headerH + 340, itemW, 24, TRUE);
+            MoveWindow(m_hLblMainOpacity,     x, headerH + 366, itemW, 16, TRUE);
+            MoveWindow(m_hComboMainOpacity,   x, headerH + 382, itemW, 150, TRUE);
 
-            MoveWindow(m_hLblSubDivisions,    x, headerH + 278, itemW, 16, TRUE);
-            MoveWindow(m_hComboSubDivisions,  x, headerH + 294, itemW, 150, TRUE);
+            // [ Sub Grid Group ]
+            MoveWindow(m_hLblSubGroupHeader,  x, headerH + 410, itemW, 16, TRUE);
+            MoveWindow(m_hLblSubDivisions,    x, headerH + 428, itemW, 16, TRUE);
+            MoveWindow(m_hComboSubDivisions,  x, headerH + 444, itemW, 150, TRUE);
+            MoveWindow(m_hLblSubLineWidth,    x, headerH + 472, itemW, 16, TRUE);
+            MoveWindow(m_hComboSubLineWidth,  x, headerH + 488, itemW, 150, TRUE);
+            MoveWindow(m_hBtnSubGridColor,    x, headerH + 516, itemW, 24, TRUE);
+            MoveWindow(m_hLblSubOpacity,      x, headerH + 542, itemW, 16, TRUE);
+            MoveWindow(m_hComboSubOpacity,    x, headerH + 558, itemW, 150, TRUE);
 
-            MoveWindow(m_hLblMainLineWidth,   x, headerH + 322, itemW, 16, TRUE);
-            MoveWindow(m_hComboMainLineWidth, x, headerH + 338, itemW, 150, TRUE);
-
-            MoveWindow(m_hLblSubLineWidth,    x, headerH + 366, itemW, 16, TRUE);
-            MoveWindow(m_hComboSubLineWidth,  x, headerH + 382, itemW, 150, TRUE);
-
-            MoveWindow(m_hChkSnapToGrid,      x, headerH + 410, itemW, 22, TRUE);
-
-            // Status info
-            MoveWindow(m_hLblSelectionInfo,   x, headerH + 434, itemW, 40, TRUE);
+            // Snap and status
+            MoveWindow(m_hChkSnapToGrid,      x, headerH + 586, itemW, 22, TRUE);
+            MoveWindow(m_hLblSelectionInfo,   x, headerH + 610, itemW, 40, TRUE);
         }
     }
 }
@@ -829,10 +862,42 @@ void MainWindow::OnCommand(WPARAM wParam, LPARAM lParam)
         if (HIWORD(wParam) == CBN_SELCHANGE)
         {
             int sel = (int)SendMessage(m_hComboMainLineWidth, CB_GETCURSEL, 0, 0);
-            float widths[] = { 0.5f, 1.0f, 1.5f, 2.0f };
-            if (sel >= 0 && sel < 4)
+            float widths[] = { 0.5f, 1.0f, 1.5f, 2.0f, 3.0f };
+            if (sel >= 0 && sel < 5)
             {
                 m_canvasWindow.GetEditorController().GetGridSettings().SetMainGridLineWidth(widths[sel]);
+                InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
+            }
+        }
+        break;
+
+    case IDC_MAIN_GRID_COLOR_BTN:
+    {
+        CHOOSECOLOR cc = { sizeof(CHOOSECOLOR) };
+        static COLORREF acrCustClr[16];
+        Color curColor = m_canvasWindow.GetEditorController().GetGridSettings().GetMainGridColor();
+        cc.hwndOwner = m_hWnd;
+        cc.lpCustColors = (LPDWORD)acrCustClr;
+        cc.rgbResult = RGB((BYTE)(curColor.r * 255), (BYTE)(curColor.g * 255), (BYTE)(curColor.b * 255));
+        cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+
+        if (ChooseColor(&cc))
+        {
+            Color newColor(GetRValue(cc.rgbResult) / 255.0f, GetGValue(cc.rgbResult) / 255.0f, GetBValue(cc.rgbResult) / 255.0f, 1.0f);
+            m_canvasWindow.GetEditorController().GetGridSettings().SetMainGridColor(newColor);
+            InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
+        }
+        break;
+    }
+
+    case IDC_MAIN_OPACITY_COMBO:
+        if (HIWORD(wParam) == CBN_SELCHANGE)
+        {
+            int sel = (int)SendMessage(m_hComboMainOpacity, CB_GETCURSEL, 0, 0);
+            float opacities[] = { 1.0f, 0.95f, 0.80f, 0.60f, 0.40f, 0.20f };
+            if (sel >= 0 && sel < 6)
+            {
+                m_canvasWindow.GetEditorController().GetGridSettings().SetMainGridOpacity(opacities[sel]);
                 InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
             }
         }
@@ -842,10 +907,42 @@ void MainWindow::OnCommand(WPARAM wParam, LPARAM lParam)
         if (HIWORD(wParam) == CBN_SELCHANGE)
         {
             int sel = (int)SendMessage(m_hComboSubLineWidth, CB_GETCURSEL, 0, 0);
-            float widths[] = { 0.1f, 0.2f, 0.3f, 0.5f };
+            float widths[] = { 0.2f, 0.5f, 0.8f, 1.0f };
             if (sel >= 0 && sel < 4)
             {
                 m_canvasWindow.GetEditorController().GetGridSettings().SetSubGridLineWidth(widths[sel]);
+                InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
+            }
+        }
+        break;
+
+    case IDC_SUB_GRID_COLOR_BTN:
+    {
+        CHOOSECOLOR cc = { sizeof(CHOOSECOLOR) };
+        static COLORREF acrCustClr[16];
+        Color curColor = m_canvasWindow.GetEditorController().GetGridSettings().GetSubGridColor();
+        cc.hwndOwner = m_hWnd;
+        cc.lpCustColors = (LPDWORD)acrCustClr;
+        cc.rgbResult = RGB((BYTE)(curColor.r * 255), (BYTE)(curColor.g * 255), (BYTE)(curColor.b * 255));
+        cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+
+        if (ChooseColor(&cc))
+        {
+            Color newColor(GetRValue(cc.rgbResult) / 255.0f, GetGValue(cc.rgbResult) / 255.0f, GetBValue(cc.rgbResult) / 255.0f, 1.0f);
+            m_canvasWindow.GetEditorController().GetGridSettings().SetSubGridColor(newColor);
+            InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
+        }
+        break;
+    }
+
+    case IDC_SUB_OPACITY_COMBO:
+        if (HIWORD(wParam) == CBN_SELCHANGE)
+        {
+            int sel = (int)SendMessage(m_hComboSubOpacity, CB_GETCURSEL, 0, 0);
+            float opacities[] = { 1.0f, 0.95f, 0.80f, 0.60f, 0.40f, 0.20f };
+            if (sel >= 0 && sel < 6)
+            {
+                m_canvasWindow.GetEditorController().GetGridSettings().SetSubGridOpacity(opacities[sel]);
                 InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
             }
         }

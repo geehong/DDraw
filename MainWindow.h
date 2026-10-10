@@ -49,14 +49,27 @@ private:
     HWND          m_hLblGridUnit;
     HWND          m_hComboGridUnit;
     HWND          m_hChkShowGrid;
+
+    // [Main Grid Group]
+    HWND          m_hLblMainGroupHeader;
     HWND          m_hLblMainGridStep;
     HWND          m_hComboMainGridStep;
-    HWND          m_hLblSubDivisions;
-    HWND          m_hComboSubDivisions;
     HWND          m_hLblMainLineWidth;
     HWND          m_hComboMainLineWidth;
+    HWND          m_hBtnMainGridColor;
+    HWND          m_hLblMainOpacity;
+    HWND          m_hComboMainOpacity;
+
+    // [Sub Grid Group]
+    HWND          m_hLblSubGroupHeader;
+    HWND          m_hLblSubDivisions;
+    HWND          m_hComboSubDivisions;
     HWND          m_hLblSubLineWidth;
     HWND          m_hComboSubLineWidth;
+    HWND          m_hBtnSubGridColor;
+    HWND          m_hLblSubOpacity;
+    HWND          m_hComboSubOpacity;
+
     HWND          m_hChkSnapToGrid;
 
     HWND          m_hLblSelectionInfo;

@@ -1,6 +1,8 @@
 #ifndef GRID_SETTINGS_H
 #define GRID_SETTINGS_H
 
+#include "../Common/Types.h"
+
 enum class GridUnit
 {
     Point,  // 1 pt = 1.0 px (web/screen unit)
@@ -42,11 +44,17 @@ private:
     GridUnit m_unit;
     bool     m_bShowGrid;
     
+    // Main Grid Properties
     float    m_mainGridStepUnit;  // Main grid step in unit (e.g. 50 pt / 50 mm)
-    int      m_subDivisions;      // Number of subdivisions inside 1 Main Grid cell (e.g. 5 splits = sub-grid step is 50/5 = 10 pt)
-    
     float    m_mainGridLineWidth; // Main grid line width (px) e.g. 1.0 px
-    float    m_subGridLineWidth;  // Sub grid line width (px) e.g. 0.2 px
+    Color    m_mainGridColor;     // Main grid RGB color
+    float    m_mainGridOpacity;   // Main grid opacity (0.0 ~ 1.0)
+    
+    // Sub Grid Properties
+    int      m_subDivisions;      // Number of subdivisions inside 1 Main Grid cell (e.g. 5 splits = sub-grid step is 50/5 = 10 pt)
+    float    m_subGridLineWidth;  // Sub grid line width (px) e.g. 0.5 px
+    Color    m_subGridColor;      // Sub grid RGB color
+    float    m_subGridOpacity;    // Sub grid opacity (0.0 ~ 1.0)
     
     bool     m_bSnapToGrid;       // Snap to sub-grid intersection
 
@@ -55,9 +63,13 @@ public:
         : m_unit(GridUnit::Point),
           m_bShowGrid(true),
           m_mainGridStepUnit(50.0f),
-          m_subDivisions(5),
           m_mainGridLineWidth(1.0f),
-          m_subGridLineWidth(0.2f),
+          m_mainGridColor(0.20f, 0.25f, 0.35f, 1.0f),
+          m_mainGridOpacity(0.95f),
+          m_subDivisions(5),
+          m_subGridLineWidth(0.5f),
+          m_subGridColor(0.50f, 0.55f, 0.65f, 1.0f),
+          m_subGridOpacity(0.50f),
           m_bSnapToGrid(true) {}
 
     GridUnit GetUnit() const { return m_unit; }
@@ -92,23 +104,37 @@ public:
     bool IsGridVisible() const { return m_bShowGrid; }
     void SetGridVisible(bool visible) { m_bShowGrid = visible; }
 
+    // Main Grid Getters & Setters
     float GetMainGridStepUnit() const { return m_mainGridStepUnit; }
     void SetMainGridStepUnit(float step) { if (step > 0.0f) m_mainGridStepUnit = step; }
 
+    float GetMainGridLineWidth() const { return m_mainGridLineWidth; }
+    void SetMainGridLineWidth(float width) { if (width > 0.0f) m_mainGridLineWidth = width; }
+
+    Color GetMainGridColor() const { return m_mainGridColor; }
+    void SetMainGridColor(const Color& color) { m_mainGridColor = color; }
+
+    float GetMainGridOpacity() const { return m_mainGridOpacity; }
+    void SetMainGridOpacity(float opacity) { m_mainGridOpacity = (opacity < 0.0f) ? 0.0f : ((opacity > 1.0f) ? 1.0f : opacity); }
+
+    // Sub Grid Getters & Setters
     int GetSubDivisions() const { return m_subDivisions; }
     void SetSubDivisions(int div) { if (div > 0) m_subDivisions = div; }
+
+    float GetSubGridLineWidth() const { return m_subGridLineWidth; }
+    void SetSubGridLineWidth(float width) { if (width > 0.0f) m_subGridLineWidth = width; }
+
+    Color GetSubGridColor() const { return m_subGridColor; }
+    void SetSubGridColor(const Color& color) { m_subGridColor = color; }
+
+    float GetSubGridOpacity() const { return m_subGridOpacity; }
+    void SetSubGridOpacity(float opacity) { m_subGridOpacity = (opacity < 0.0f) ? 0.0f : ((opacity > 1.0f) ? 1.0f : opacity); }
 
     // Calculated Sub Grid Step in Unit = MainGridStepUnit / SubDivisions
     float GetSubGridStepUnit() const
     {
         return (m_subDivisions > 0) ? (m_mainGridStepUnit / static_cast<float>(m_subDivisions)) : m_mainGridStepUnit;
     }
-
-    float GetMainGridLineWidth() const { return m_mainGridLineWidth; }
-    void SetMainGridLineWidth(float width) { if (width > 0.0f) m_mainGridLineWidth = width; }
-
-    float GetSubGridLineWidth() const { return m_subGridLineWidth; }
-    void SetSubGridLineWidth(float width) { if (width > 0.0f) m_subGridLineWidth = width; }
 
     bool IsSnapToGrid() const { return m_bSnapToGrid; }
     void SetSnapToGrid(bool snap) { m_bSnapToGrid = snap; }

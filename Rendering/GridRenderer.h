@@ -20,10 +20,12 @@ public:
         float mainStepPx = settings.GetMainGridStepPx();
         float subStepPx = settings.GetSubGridStepPx();
 
-        // 1. Render Sub Grid Lines (fine lines dividing main grid cell, e.g. 0.2 px)
+        // 1. Render Sub Grid Lines (fine lines dividing main grid cell)
         if (subStepPx >= 3.0f && subStepPx < mainStepPx)
         {
-            pBrush->SetColor(D2D1::ColorF(0.85f, 0.88f, 0.92f, 0.6f));
+            Color subC = settings.GetSubGridColor();
+            float subOpacity = settings.GetSubGridOpacity();
+            pBrush->SetColor(D2D1::ColorF(subC.r, subC.g, subC.b, subC.a * subOpacity));
             float subW = settings.GetSubGridLineWidth();
 
             for (float y = 0.0f; y < height; y += subStepPx)
@@ -44,10 +46,12 @@ public:
             }
         }
 
-        // 2. Render Main Grid Lines (prominent outer boundary, e.g. 1.0 px ~ 1.5 px)
+        // 2. Render Main Grid Lines (prominent outer boundary)
         if (mainStepPx >= 5.0f)
         {
-            pBrush->SetColor(D2D1::ColorF(0.20f, 0.25f, 0.35f, 0.95f)); // Distinct dark main grid line
+            Color mainC = settings.GetMainGridColor();
+            float mainOpacity = settings.GetMainGridOpacity();
+            pBrush->SetColor(D2D1::ColorF(mainC.r, mainC.g, mainC.b, mainC.a * mainOpacity));
             float mainW = settings.GetMainGridLineWidth();
 
             for (float y = 0.0f; y < height; y += mainStepPx)
