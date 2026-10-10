@@ -41,55 +41,50 @@ class GridSettings
 private:
     GridUnit m_unit;
     bool     m_bShowGrid;
-    float    m_subGridStepUnit;   // Small grid step in unit (e.g. 5 pt or 1 mm)
-    float    m_mainGridStepUnit;  // Major grid step in unit (e.g. 10 pt or 10 mm)
-    float    m_subGridLineWidth;  // e.g. 0.1 px
-    float    m_mainGridLineWidth; // e.g. 0.5 px
-    bool     m_bSnapToGrid;
-    float    m_snapIntervalUnit; // Grid snap interval in unit (e.g. 5 pt, 1 mm)
+    
+    float    m_mainGridStepUnit;  // Main grid step in unit (e.g. 50 pt / 50 mm)
+    int      m_subDivisions;      // Number of subdivisions inside 1 Main Grid cell (e.g. 5 splits = sub-grid step is 50/5 = 10 pt)
+    
+    float    m_mainGridLineWidth; // Main grid line width (px) e.g. 1.0 px
+    float    m_subGridLineWidth;  // Sub grid line width (px) e.g. 0.2 px
+    
+    bool     m_bSnapToGrid;       // Snap to sub-grid intersection
 
 public:
     GridSettings()
         : m_unit(GridUnit::Point),
           m_bShowGrid(true),
-          m_subGridStepUnit(5.0f),
-          m_mainGridStepUnit(10.0f),
-          m_subGridLineWidth(0.1f),
-          m_mainGridLineWidth(0.5f),
-          m_bSnapToGrid(true),
-          m_snapIntervalUnit(5.0f) {}
+          m_mainGridStepUnit(50.0f),
+          m_subDivisions(5),
+          m_mainGridLineWidth(1.0f),
+          m_subGridLineWidth(0.2f),
+          m_bSnapToGrid(true) {}
 
     GridUnit GetUnit() const { return m_unit; }
     void SetUnit(GridUnit unit)
     {
         m_unit = unit;
-        // Apply sensible defaults per unit
         switch (unit)
         {
         case GridUnit::Point:
-            m_subGridStepUnit = 5.0f;
-            m_mainGridStepUnit = 25.0f;
-            m_snapIntervalUnit = 5.0f;
+            m_mainGridStepUnit = 50.0f;
+            m_subDivisions = 5;       // 50 / 5 = 10 pt per sub grid
             break;
         case GridUnit::MM:
-            m_subGridStepUnit = 1.0f;
-            m_mainGridStepUnit = 10.0f;
-            m_snapIntervalUnit = 1.0f;
+            m_mainGridStepUnit = 50.0f;
+            m_subDivisions = 5;       // 50 / 5 = 10 mm per sub grid
             break;
         case GridUnit::CM:
-            m_subGridStepUnit = 0.5f;
-            m_mainGridStepUnit = 1.0f;
-            m_snapIntervalUnit = 0.5f;
+            m_mainGridStepUnit = 5.0f;
+            m_subDivisions = 5;       // 5 / 5 = 1 cm per sub grid
             break;
         case GridUnit::M:
-            m_subGridStepUnit = 0.05f;
-            m_mainGridStepUnit = 0.1f;
-            m_snapIntervalUnit = 0.05f;
+            m_mainGridStepUnit = 1.0f;
+            m_subDivisions = 10;      // 1 / 10 = 0.1 m per sub grid
             break;
         case GridUnit::Inch:
-            m_subGridStepUnit = 0.125f;
-            m_mainGridStepUnit = 0.5f;
-            m_snapIntervalUnit = 0.125f;
+            m_mainGridStepUnit = 1.0f;
+            m_subDivisions = 8;       // 1 / 8 = 0.125 in per sub grid
             break;
         }
     }
@@ -97,28 +92,33 @@ public:
     bool IsGridVisible() const { return m_bShowGrid; }
     void SetGridVisible(bool visible) { m_bShowGrid = visible; }
 
-    float GetSubGridStepUnit() const { return m_subGridStepUnit; }
-    void SetSubGridStepUnit(float step) { if (step > 0.0f) m_subGridStepUnit = step; }
-
     float GetMainGridStepUnit() const { return m_mainGridStepUnit; }
     void SetMainGridStepUnit(float step) { if (step > 0.0f) m_mainGridStepUnit = step; }
 
-    float GetSubGridLineWidth() const { return m_subGridLineWidth; }
-    void SetSubGridLineWidth(float width) { if (width > 0.0f) m_subGridLineWidth = width; }
+    int GetSubDivisions() const { return m_subDivisions; }
+    void SetSubDivisions(int div) { if (div > 0) m_subDivisions = div; }
+
+    // Calculated Sub Grid Step in Unit = MainGridStepUnit / SubDivisions
+    float GetSubGridStepUnit() const
+    {
+        return (m_subDivisions > 0) ? (m_mainGridStepUnit / static_cast<float>(m_subDivisions)) : m_mainGridStepUnit;
+    }
 
     float GetMainGridLineWidth() const { return m_mainGridLineWidth; }
     void SetMainGridLineWidth(float width) { if (width > 0.0f) m_mainGridLineWidth = width; }
 
+    float GetSubGridLineWidth() const { return m_subGridLineWidth; }
+    void SetSubGridLineWidth(float width) { if (width > 0.0f) m_subGridLineWidth = width; }
+
     bool IsSnapToGrid() const { return m_bSnapToGrid; }
     void SetSnapToGrid(bool snap) { m_bSnapToGrid = snap; }
 
-    float GetSnapIntervalUnit() const { return m_snapIntervalUnit; }
-    void SetSnapIntervalUnit(float val) { if (val > 0.0f) m_snapIntervalUnit = val; }
-
     // Helper functions in pixels
-    float GetSubGridStepPx() const { return m_subGridStepUnit * GetPixelsPerUnit(m_unit); }
     float GetMainGridStepPx() const { return m_mainGridStepUnit * GetPixelsPerUnit(m_unit); }
-    float GetSnapIntervalPx() const { return m_snapIntervalUnit * GetPixelsPerUnit(m_unit); }
+    float GetSubGridStepPx() const { return GetSubGridStepUnit() * GetPixelsPerUnit(m_unit); }
+
+    // Snap to sub-grid step (in pixels)
+    float GetSnapIntervalPx() const { return GetSubGridStepPx(); }
 
     Point2D SnapPoint(Point2D pt) const
     {

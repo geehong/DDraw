@@ -49,10 +49,14 @@ private:
     HWND          m_hLblGridUnit;
     HWND          m_hComboGridUnit;
     HWND          m_hChkShowGrid;
-    HWND          m_hLblSubGridStep;
-    HWND          m_hComboSubGridStep;
     HWND          m_hLblMainGridStep;
     HWND          m_hComboMainGridStep;
+    HWND          m_hLblSubDivisions;
+    HWND          m_hComboSubDivisions;
+    HWND          m_hLblMainLineWidth;
+    HWND          m_hComboMainLineWidth;
+    HWND          m_hLblSubLineWidth;
+    HWND          m_hComboSubLineWidth;
     HWND          m_hChkSnapToGrid;
 
     HWND          m_hLblSelectionInfo;

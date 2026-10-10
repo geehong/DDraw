@@ -17,13 +17,13 @@ public:
         ID2D1SolidColorBrush* pBrush = renderContext.GetSolidBrush();
         if (!pTarget || !pBrush) return;
 
-        float subStepPx = settings.GetSubGridStepPx();
         float mainStepPx = settings.GetMainGridStepPx();
+        float subStepPx = settings.GetSubGridStepPx();
 
-        // 1. Render Sub Grid (smaller scale, thin line width e.g. 0.1 ~ 0.5px)
-        if (subStepPx >= 3.0f)
+        // 1. Render Sub Grid Lines (fine lines dividing main grid cell, e.g. 0.2 px)
+        if (subStepPx >= 3.0f && subStepPx < mainStepPx)
         {
-            pBrush->SetColor(D2D1::ColorF(0.90f, 0.90f, 0.90f, 0.7f));
+            pBrush->SetColor(D2D1::ColorF(0.85f, 0.88f, 0.92f, 0.6f));
             float subW = settings.GetSubGridLineWidth();
 
             for (float y = 0.0f; y < height; y += subStepPx)
@@ -44,10 +44,10 @@ public:
             }
         }
 
-        // 2. Render Main Grid (graph paper concept, thicker/darker line width e.g. 0.5 ~ 1.0px)
+        // 2. Render Main Grid Lines (prominent outer boundary, e.g. 1.0 px ~ 1.5 px)
         if (mainStepPx >= 5.0f)
         {
-            pBrush->SetColor(D2D1::ColorF(0.75f, 0.78f, 0.82f, 0.9f));
+            pBrush->SetColor(D2D1::ColorF(0.20f, 0.25f, 0.35f, 0.95f)); // Distinct dark main grid line
             float mainW = settings.GetMainGridLineWidth();
 
             for (float y = 0.0f; y < height; y += mainStepPx)
