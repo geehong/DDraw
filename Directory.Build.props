@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!-- Ensure /FS is passed to cl.exe to avoid PDB write conflicts when multiple compiler processes run -->
+  <ItemDefinitionGroup>
+	<ClCompile>
+	  <AdditionalOptions>%(AdditionalOptions) /FS</AdditionalOptions>
+	</ClCompile>
+  </ItemDefinitionGroup>
+</Project>

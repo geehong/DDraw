@@ -1,0 +1,48 @@
+#include "resource.h"
+#include "winres.h"
+
+IDB_TOOLBAR BITMAP "toolbar.bmp"
+
+IDC_APPDRAW ACCELERATORS
+BEGIN
+    "Z", IDM_EDIT_UNDO, VIRTKEY, CONTROL
+    "Y", IDM_EDIT_REDO, VIRTKEY, CONTROL
+    "S", IDM_FILE_SAVE, VIRTKEY, CONTROL
+    "O", IDM_FILE_OPEN, VIRTKEY, CONTROL
+    "N", IDM_FILE_NEW, VIRTKEY, CONTROL
+    VK_DELETE, IDM_EDIT_DELETE, VIRTKEY
+END
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "File(&F)"
+    BEGIN
+        MENUITEM "New(&N)\tCtrl+N",           IDM_FILE_NEW
+        MENUITEM "Open(&O)...\tCtrl+O",        IDM_FILE_OPEN
+        MENUITEM "Save(&S)\tCtrl+S",           IDM_FILE_SAVE
+        MENUITEM "Save As...(&A)",             IDM_FILE_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "Exit(&X)",                   IDM_FILE_EXIT
+    END
+    POPUP "Edit(&E)"
+    BEGIN
+        MENUITEM "Undo(&U)\tCtrl+Z",           IDM_EDIT_UNDO
+        MENUITEM "Redo(&R)\tCtrl+Y",           IDM_EDIT_REDO
+        MENUITEM SEPARATOR
+        MENUITEM "Delete(&D)\tDel",            IDM_EDIT_DELETE
+    END
+    POPUP "Shape(&S)"
+    BEGIN
+        MENUITEM "Select(&S)",                 IDM_SHAPE_SELECT
+        MENUITEM SEPARATOR
+        MENUITEM "Line(&L)",                   IDM_SHAPE_LINE
+        MENUITEM "Ellipse(&E)",                IDM_SHAPE_ELLIPSE
+        MENUITEM "Rectangle(&R)",              IDM_SHAPE_RECTANGLE
+        MENUITEM "Text(&T)",                   IDM_SHAPE_TEXT
+        MENUITEM "Polygon(&P)",                IDM_SHAPE_POLYGON
+    END
+    POPUP "Help(&H)"
+    BEGIN
+        MENUITEM "About(&A)...",               IDM_HELP_ABOUT
+    END
+END

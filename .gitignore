@@ -1,0 +1,27 @@
+# Build and binary outputs
+build/
+build_temp/
+build_v18/
+out/
+x64/
+Debug/
+Release/
+
+# Visual Studio temporary files
+.vs/
+*.user
+*.suo
+*.aps
+*.tlog
+*.log
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.idb
+
+# VS Code
+.vscode/
+
+# Temporary files
+*.tmp
