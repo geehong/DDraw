@@ -6,6 +6,14 @@
 
 #pragma comment(lib, "comctl32.lib")
 
+// Enable Visual Styles (Common Controls v6)
+#pragma comment(linker, "\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' \
+version='6.0.0.0' \
+processorArchitecture='*' \
+publicKeyToken='6595b64144ccf1df' \
+language='*'\"")
+
 MainWindow::MainWindow()
     : m_canvasWindow(m_toolManager),
       m_leftDockPanel(L" Tools Panel ", DockPosition::Left, 140),
@@ -579,7 +587,8 @@ bool MainWindow::FileSaveAs()
 
 void MainWindow::OnCreate()
 {
-    InitCommonControls();
+    INITCOMMONCONTROLSEX icex = { sizeof(INITCOMMONCONTROLSEX), ICC_WIN95_CLASSES | ICC_STANDARD_CLASSES | ICC_BAR_CLASSES };
+    InitCommonControlsEx(&icex);
     CreateAppMenu();
     CreateAppToolBar();
     CreateAppStatusBar();
@@ -986,9 +995,10 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         HDC hdcStatic = (HDC)wParam;
         SetBkMode(hdcStatic, TRANSPARENT);
+        SetBkColor(hdcStatic, RGB(240, 243, 248));
         SetTextColor(hdcStatic, RGB(30, 40, 55));
-        static HBRUSH hNullBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
-        return (LRESULT)hNullBrush;
+        static HBRUSH hBackBrush = CreateSolidBrush(RGB(240, 243, 248));
+        return (LRESULT)hBackBrush;
     }
 
     case WM_HSCROLL:
