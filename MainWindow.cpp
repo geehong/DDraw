@@ -981,9 +981,23 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         OnSize(LOWORD(lParam), HIWORD(lParam));
         return 0;
 
+    case WM_CTLCOLORSTATIC:
+    case WM_CTLCOLORBTN:
+    {
+        HDC hdcStatic = (HDC)wParam;
+        SetBkColor(hdcStatic, RGB(240, 243, 248));
+        SetTextColor(hdcStatic, RGB(30, 40, 55));
+        static HBRUSH hBackBrush = CreateSolidBrush(RGB(240, 243, 248));
+        return (LRESULT)hBackBrush;
+    }
+
     case WM_HSCROLL:
     {
         HWND hTrack = (HWND)lParam;
+        wchar_t dbgLog[256];
+        StringCchPrintf(dbgLog, 256, L"[WM_HSCROLL] Trackbar event received, hTrack=0x%p, code=%d\n", hTrack, LOWORD(wParam));
+        OutputDebugString(dbgLog);
+
         if (hTrack == m_hTrackStrokeWidth)
         {
             int pos = (int)SendMessage(m_hTrackStrokeWidth, TBM_GETPOS, 0, 0);
@@ -993,6 +1007,9 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             wchar_t buf[64];
             swprintf_s(buf, L"Line Width: %.1f px", width);
             SetWindowText(m_hLblLineWidth, buf);
+
+            StringCchPrintf(dbgLog, 256, L"[WM_HSCROLL] Shape StrokeWidth set to %.1f px (pos=%d)\n", width, pos);
+            OutputDebugString(dbgLog);
 
             ApplyPropertyChanges();
         }
@@ -1006,6 +1023,9 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             swprintf_s(buf, L"Width: %.1f px", width);
             SetWindowText(m_hLblMainLineWidth, buf);
 
+            StringCchPrintf(dbgLog, 256, L"[WM_HSCROLL] MainGrid Width set to %.1f px (pos=%d)\n", width, pos);
+            OutputDebugString(dbgLog);
+
             InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
         }
         else if (hTrack == m_hTrackMainOpacity)
@@ -1017,6 +1037,9 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             wchar_t buf[64];
             swprintf_s(buf, L"Opacity: %d%%", pos);
             SetWindowText(m_hLblMainOpacity, buf);
+
+            StringCchPrintf(dbgLog, 256, L"[WM_HSCROLL] MainGrid Opacity set to %d%% (opacity=%.2f)\n", pos, opacity);
+            OutputDebugString(dbgLog);
 
             InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
         }
@@ -1030,6 +1053,9 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             swprintf_s(buf, L"Width: %.1f px", width);
             SetWindowText(m_hLblSubLineWidth, buf);
 
+            StringCchPrintf(dbgLog, 256, L"[WM_HSCROLL] SubGrid Width set to %.1f px (pos=%d)\n", width, pos);
+            OutputDebugString(dbgLog);
+
             InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
         }
         else if (hTrack == m_hTrackSubOpacity)
@@ -1041,6 +1067,9 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             wchar_t buf[64];
             swprintf_s(buf, L"Opacity: %d%%", pos);
             SetWindowText(m_hLblSubOpacity, buf);
+
+            StringCchPrintf(dbgLog, 256, L"[WM_HSCROLL] SubGrid Opacity set to %d%% (opacity=%.2f)\n", pos, opacity);
+            OutputDebugString(dbgLog);
 
             InvalidateRect(m_canvasWindow.GetHWND(), NULL, FALSE);
         }

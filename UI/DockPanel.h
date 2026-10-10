@@ -230,12 +230,16 @@ protected:
             return 0;
         }
 
+        case WM_HSCROLL:
+        case WM_VSCROLL:
+        case WM_CTLCOLORSTATIC:
+        case WM_CTLCOLORBTN:
         case WM_COMMAND:
         {
             HWND hParent = GetParent(m_hWnd);
             if (hParent)
             {
-                return SendMessage(hParent, WM_COMMAND, wParam, lParam);
+                return SendMessage(hParent, uMsg, wParam, lParam);
             }
             break;
         }
