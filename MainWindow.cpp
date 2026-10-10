@@ -165,7 +165,7 @@ void MainWindow::CreateSoftimagePanels()
         10, 320, 120, 26, m_hLeftPanel, (HMENU)(UINT_PTR)IDM_EDIT_DELETE, hInst, NULL);
 
     // Right Panel Children Controls - Style & Grid Settings (Grouped with GroupBoxes)
-    m_hGrpShapeProperties = CreateWindowEx(0, L"BUTTON", L" Selection Properties ",
+    m_hGrpShapeProperties = CreateWindowEx(WS_EX_TRANSPARENT, L"BUTTON", L" Selection Properties ",
         WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
         5, 28, 170, 180, m_hRightMCP, NULL, hInst, NULL);
 
@@ -188,7 +188,7 @@ void MainWindow::CreateSoftimagePanels()
         15, 158, 150, 22, m_hRightMCP, (HMENU)(UINT_PTR)IDC_FILLED_CHECK, hInst, NULL);
 
     // --- Grid Settings Outer GroupBox ---
-    m_hGrpGridSettings = CreateWindowEx(0, L"BUTTON", L" Grid Settings ",
+    m_hGrpGridSettings = CreateWindowEx(WS_EX_TRANSPARENT, L"BUTTON", L" Grid Settings ",
         WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
         5, 215, 170, 560, m_hRightMCP, NULL, hInst, NULL);
 
@@ -210,7 +210,7 @@ void MainWindow::CreateSoftimagePanels()
     // =========================================================
     // [ Main Grid GroupBox ] (Step, Width Trackbar, Color, Opacity Trackbar)
     // =========================================================
-    m_hGrpMainGrid = CreateWindowEx(0, L"BUTTON", L" Main Grid ",
+    m_hGrpMainGrid = CreateWindowEx(WS_EX_TRANSPARENT, L"BUTTON", L" Main Grid ",
         WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
         12, 316, 156, 210, m_hRightMCP, NULL, hInst, NULL);
 
@@ -245,7 +245,7 @@ void MainWindow::CreateSoftimagePanels()
     // =========================================================
     // [ Sub Grid GroupBox ] (Split, Width Trackbar, Color, Opacity Trackbar)
     // =========================================================
-    m_hGrpSubGrid = CreateWindowEx(0, L"BUTTON", L" Sub Grid ",
+    m_hGrpSubGrid = CreateWindowEx(WS_EX_TRANSPARENT, L"BUTTON", L" Sub Grid ",
         WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
         12, 532, 156, 210, m_hRightMCP, NULL, hInst, NULL);
 
@@ -986,10 +986,9 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         HDC hdcStatic = (HDC)wParam;
         SetBkMode(hdcStatic, TRANSPARENT);
-        SetBkColor(hdcStatic, RGB(240, 243, 248));
         SetTextColor(hdcStatic, RGB(30, 40, 55));
-        static HBRUSH hBackBrush = CreateSolidBrush(RGB(240, 243, 248));
-        return (LRESULT)hBackBrush;
+        static HBRUSH hNullBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+        return (LRESULT)hNullBrush;
     }
 
     case WM_HSCROLL:
