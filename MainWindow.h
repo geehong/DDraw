@@ -37,7 +37,7 @@ private:
     HWND          m_hBtnDelete;
 
     // Right Panel Win32 Property Controls
-    HWND          m_hLblPropertiesHeader;
+    HWND          m_hGrpShapeProperties;
     HWND          m_hLblLineWidth;
     HWND          m_hComboStrokeWidth;
     HWND          m_hBtnStrokeColor;
@@ -45,30 +45,30 @@ private:
     HWND          m_hChkFilled;
 
     // Grid Settings UI Controls
-    HWND          m_hLblGridHeader;
+    HWND          m_hGrpGridSettings;
     HWND          m_hLblGridUnit;
     HWND          m_hComboGridUnit;
     HWND          m_hChkShowGrid;
 
-    // [Main Grid Group]
-    HWND          m_hLblMainGroupHeader;
+    // [Main Grid GroupBox & Controls]
+    HWND          m_hGrpMainGrid;
     HWND          m_hLblMainGridStep;
     HWND          m_hComboMainGridStep;
     HWND          m_hLblMainLineWidth;
-    HWND          m_hComboMainLineWidth;
+    HWND          m_hTrackMainLineWidth;
     HWND          m_hBtnMainGridColor;
     HWND          m_hLblMainOpacity;
-    HWND          m_hComboMainOpacity;
+    HWND          m_hTrackMainOpacity;
 
-    // [Sub Grid Group]
-    HWND          m_hLblSubGroupHeader;
+    // [Sub Grid GroupBox & Controls]
+    HWND          m_hGrpSubGrid;
     HWND          m_hLblSubDivisions;
     HWND          m_hComboSubDivisions;
     HWND          m_hLblSubLineWidth;
-    HWND          m_hComboSubLineWidth;
+    HWND          m_hTrackSubLineWidth;
     HWND          m_hBtnSubGridColor;
     HWND          m_hLblSubOpacity;
-    HWND          m_hComboSubOpacity;
+    HWND          m_hTrackSubOpacity;
 
     HWND          m_hChkSnapToGrid;
 
