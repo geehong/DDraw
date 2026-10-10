@@ -37,6 +37,44 @@ public:
 
     const std::wstring& GetTitle() const { return m_title; }
 
+    BOOL Create(
+        PCWSTR lpWindowName,
+        DWORD dwStyle,
+        DWORD dwExStyle = 0,
+        int x = CW_USEDEFAULT,
+        int y = CW_USEDEFAULT,
+        int nWidth = CW_USEDEFAULT,
+        int nHeight = CW_USEDEFAULT,
+        HWND hWndParent = NULL,
+        HMENU hMenu = NULL
+    )
+    {
+        static HBRUSH hBackBrush = CreateSolidBrush(RGB(240, 243, 248));
+        WNDCLASSEX wc = { sizeof(WNDCLASSEX) };
+        wc.style         = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+        wc.lpfnWndProc   = BaseWindow::WindowProc;
+        wc.hInstance     = GetModuleHandle(NULL);
+        wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+        wc.hbrBackground = hBackBrush;
+        wc.lpszClassName = GetClassName();
+
+        RegisterClassEx(&wc);
+
+        m_hWnd = CreateWindowEx(
+            dwExStyle,
+            GetClassName(),
+            lpWindowName,
+            dwStyle,
+            x, y, nWidth, nHeight,
+            hWndParent,
+            hMenu,
+            GetModuleHandle(NULL),
+            this
+        );
+
+        return (m_hWnd != NULL);
+    }
+
 protected:
     virtual PCWSTR GetClassName() const override { return L"DockPanelClass"; }
 

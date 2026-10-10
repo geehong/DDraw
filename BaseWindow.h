@@ -55,8 +55,6 @@ public:
 protected:
     virtual PCWSTR GetClassName() const = 0;
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
-
-private:
     static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         BaseWindow* pSelf = NULL;
